@@ -25,37 +25,23 @@ void handleException(std::exception_ptr &ptr)
     }
 }
 
-void test1()
-{
-    std::exception_ptr ptr = std::make_exception_ptr(CustomException::Exception_Type2{0x02});
-    handleException(ptr);
-}
-
-void test2()
-{
-    std::exception_ptr ptr = std::make_exception_ptr(CustomException::Exception_Type3{0x02});
-    handleException(ptr);
-}
-
-void test3()
-{
-    std::exception_ptr ptr = std::make_exception_ptr(CustomException::Exception_Type1{0x01});
-    handleException(ptr);
-}
-
-
 extern "C" JNIEXPORT jstring
 
 JNICALL
 Java_com_utils_helloworldnative2_MainActivity_stringFromJNI(JNIEnv *env, jobject /* this */)
 {
-    std::string hello = "Hello from C++ ";
     __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "Inside JNI");
 
-    test1();
-    test2();
-    test3();
-    return env->NewStringUTF(hello.c_str());
+    bool result1 = CustomException::IsError<CustomException::Exception_Type2>(std::make_exception_ptr(CustomException::Exception_Type1{0x01}));
+    bool result2 = CustomException::IsError<CustomException::Exception_Type2>(std::make_exception_ptr(CustomException::Exception_Type2{0x02}));
+    bool result3 = CustomException::IsError<CustomException::Exception_Type2>(std::make_exception_ptr(CustomException::Exception_Type3{0x03}));
+
+    std::string result = "";
+    result = result + "CustomException::Exception_Type1" + " : " + (result1 ? "true" : "false") + "\n";
+    result = result + "CustomException::Exception_Type2" + " : " + (result2 ? "true" : "false") + "\n";
+    result = result + "CustomException::Exception_Type3" + " : " + (result3 ? "true" : "false") + "\n";
+
+    return env->NewStringUTF(result.c_str());
 }
 
 
